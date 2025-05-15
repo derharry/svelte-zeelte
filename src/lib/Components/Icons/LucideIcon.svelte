@@ -42,4 +42,4 @@ Default <LucideIcon icon="circle-help" cssClass="" cssStyle="font-size:1em">
 
 
 <!-- SVG file for a single icon -->
-<img src="https://unpkg.com/lucide-static@latest/icons/{name}.svg" class="{cssClass}" style="font-size:1em {cssStyle}" {...props}/>
+<img src="https://unpkg.com/lucide-static@latest/icons/{name}.svg" class="{cssClass}" style="font-size:1em; display:inline; {cssStyle}" {...props}/>

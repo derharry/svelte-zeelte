@@ -4,7 +4,7 @@
 -->
 <script lang="ts">
 
-	import SearchFieldNew from './SearchFieldZeelte.svelte';
+	import SearchFieldNew from './SearchField.svelte';
 
 	/** array[] list of raw-data for SearchField */
 	export let data = [];
@@ -15,7 +15,7 @@
 	/** name for SELECT */
 	export let name: string = '';
 
-	/** selected value for SELECT */
+	/** selected value for SELECT. id = index or id,uuid */
 	export let value = -1;
 
 	/** size of SELECT (how many rows) */
@@ -25,13 +25,11 @@
 	export let cssClass: string = ""
 	export let cssStyle: string = ""
 
-	/** selected id (keyvalue) to auto select and return */
-	// -- export let selected_id = -1;
 	/** selected text of the option field - readonly */
-	// -- export let selected_text = '';
-	// -- export let onchange = null;
+	export let value_text = '';
+
 	/** dom binding of select field */
-	// -- let dom_select = undefined;
+	let dom_select :HTMLSelectElement = undefined;
 
 </script>
 
@@ -44,11 +42,16 @@
 
 	<slot>
 	<select  
+		bind:this={dom_select}
 		{name}
 		bind:value
 		{size} 
 		class="select rounded-container {cssClass}"
-		style="{cssStyle}"
+		style="{cssStyle}"		
+		onchange={() => {
+        		// Update value_text with the selected option's label
+        		value_text = dom_select.options[dom_select.selectedIndex]?.textContent ?? '';
+    		}}
 	>
 
 		{#each data_filtered as row, id}

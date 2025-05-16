@@ -10,6 +10,7 @@
 	const event = createEventDispatcher()
 
 	import { Search } from "@lucide/svelte";
+	import { ZP_EventDetails } from 'zeeltephp';
 
 	/** name of Input searchfield */
 	export let name : string = '';
@@ -86,6 +87,7 @@
 	"
 >
 	<input 
+		id="searchInput"
 		{name}
 		bind:value
 		type="text"
@@ -94,14 +96,24 @@
 		class="ig-input {cssClass}" 
 		style={cssStyle}
 		on:keydown={ (e) => { 
-			// when ESC   - clear search field to ''
-			// when ENTER - SubmitEvent //--event('submit')} 
+			const ed = new ZP_EventDetails(e);
+			if (ed.keyId == 27) 
+				// when ESC   - clear search field to ''
+				value = '';
+			else if (ed.keyId == 13) 
+				// when ENTER - SubmitEvent //--event('submit')} 
+				event('submit')
+			
 		}}
 	/>
 	<button 
 		type="button"
+		id="submitBtn"
 		{formaction}
 		class="ig-btn preset-filled-primary-500" 
-		on:click|preventDefault={ (e) => { event('submit')} }
+		on:click|preventDefault={ (e) => { 
+			//if (document.getElementById('searchInput').checkValidity())
+			event('submit')
+		}}
 	><Search size={16} /></button>
 </div>

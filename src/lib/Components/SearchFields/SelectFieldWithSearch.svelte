@@ -4,6 +4,8 @@
 -->
 <script lang="ts">
 
+	import { onMount } from 'svelte';
+
 	import SearchFieldNew from './SearchField.svelte';
 
 	/** array[] list of raw-data for SearchField */
@@ -30,6 +32,14 @@
 
 	/** dom binding of select field */
 	let dom_select :HTMLSelectElement = undefined;
+
+	// -- Svelte4: // $:value_text = value ? dom_select.options[dom_select.selectedIndex].textContent ?? '' : '';
+	// --> changed select on:change to onchange to work in Svelte 5
+
+	onMount(() => {
+		// update the value_text after document is mounted
+		value_text = dom_select.options[dom_select.selectedIndex].textContent ?? '';
+	})
 
 </script>
 
@@ -85,26 +95,30 @@
 			bind:this={dom_select}
 			bind:value
 			{name}
-			{size} 	
+			{size}
+			class="{cssClass}"
+			style="{cssStyle}"
 			onchange={() => {
 				// Update value_text with the selected option's label
 				value_text = dom_select.options[dom_select.selectedIndex]?.textContent ?? '';
-				console.log('sel-change');
 			}}
-			class="{cssClass}"
-			style="{cssStyle}"
 		>
-		<!-- 
-			style="{cssStyle}
-		-->
 			{#each data_filtered as row (row?.id || row?.uuid || row)} <!-- Keyed each loop -->
 
 				{#if row instanceof Array}
 
+                         <!-- 
+                              for now just dump, future maybe styled? like tabbed  
+					     <li>{row[1]} {row[2]} {row[3]}</li>
+				     -->
 					<option value={row}>{row}</option>
 
 				{:else if row instanceof Object}
 
+                         <!-- 
+                              for now just dump,   future maybe styled? like tabbed  
+                              <li>{row.name} {row.date} {row.anyvalue}</li>
+                         -->
 					<option value={row?.id || row?.uuid || row}>
 						{#each Object.entries(row) as [key, val],id}
 							{#if !['id', 'uuid'].includes(key)}
@@ -113,61 +127,28 @@
 						{/each}
 					</option>
 
+                         <!-- 
+                              previous tryouts, keep to do not again :-)
+                              <option value={row}>
+                                   {#each row as col}
+                                   {#each row as [key, value], id}
+                                        {id} {key} {value}
+                                   {/each}
+                              </option>
+                              {#each Object.entries(data_filtered) as [id, attrs] (id)}
+                                   <option value={attrs?.id || '-1'}> {attrs?.name || '-'} </option>
+                              {/each}
+                         -->
+
 				{:else}
 
+				     <!-- default fallback, just dump the content  -->
 					<option value={row}>{row}</option>
 
 				{/if}
 			{/each}
 		</select>
 
-
-		<!-- 
-		{#each data_filtered as row, id}
-
-			{#if row instanceof Array}
-
-				<!-- for now just dump,   future maybe styled? like tabbed  
-					<li>{row[1]} {row[2]} {row[3]}</li>
-				 -- >
-				<option value={row}>{row}</option>
-
-			{:else if row instanceof Object}
-
-				<!-- for now just dump,   future maybe styled? like tabbed  
-					<li>{row.name} {row.date} {row.anyvalue}</li>
-				 -- >
-				<option value={row?.id || row?.uuid || id}>
-					{#each Object.entries(row) as [key, value],ido}
-						{#if key != 'id' && key != 'uuid'} 
-							{value}
-						{/if}
-					{/each}
-				</option>
-
-				<!-- previous tryouts, keep to do not again :-)
-
-					<option value={row}>
-						{#each row as col}
-						{#each row as [key, value], id}
-							{id} {key} {value}
-						{/each}
-					</option>
-
-				{#each Object.entries(data_filtered) as [id, attrs] (id)}
-					<option value={attrs?.id || '-1'}> {attrs?.name || '-'} </option>
-				{/each}
-				-- >
-
-			{:else}
-
-				<!-- default fallback, just dump the content  -- >
-				<option value={row}>{row}</option>
-
-			{/if}
-
-		{/each}
-		-->
 	</slot>
 
 </div>
